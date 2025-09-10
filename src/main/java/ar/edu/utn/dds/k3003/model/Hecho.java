@@ -36,12 +36,10 @@ public class Hecho {
     public Hecho() {
         // No-argument constructor
     }
-    
-    
+
     @ManyToOne
     @JoinColumn(name = "Fuente_id", referencedColumnName="id")
     private Fuente fuente;
-    
     
     public Hecho(String id, String nombreColeccion, String titulo,  String ubicacion, LocalDateTime fecha, String origen) {
         this.id = id;
@@ -116,4 +114,3 @@ public class Hecho {
         return id != null ? id.hashCode() : 0;
     }
 }
-

@@ -50,12 +50,6 @@
     </dependency>
 
     <!-- Database -->
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-
 	<dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -87,15 +81,11 @@
     <version>2.9.0</version>
     </dependency>
 
-	
-
-
     <dependency>
       <groupId>com.github.ezequieljsosa</groupId>
       <artifactId>dds-eval-tp2025</artifactId>
       <version>0.0.7</version>
     </dependency>
-
 
     <!-- Spring Boot Test -->
     <dependency>
