@@ -1,4 +1,4 @@
- <?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
@@ -26,6 +26,8 @@
     <!-- Dependencies versions -->
     <junit.version>5.10.2</junit.version>
     <mockito.version>5.11.0</mockito.version>
+    <retrofit.version>2.11.0</retrofit.version>
+    <slf4j.version>2.0.13</slf4j.version>
   </properties>
 
   <dependencies>
@@ -49,12 +51,13 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Database -->
-	<dependency>
+    <!-- Database: PostgreSQL Driver -->
+    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+
     <!-- Existing Dependencies -->
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -62,30 +65,19 @@
     </dependency>
 
     <dependency>
-      
-<groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    
-    <scope>provided</scope>
-
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
-        <groupId>com.squareup.retrofit2</groupId>
-        <artifactId>retrofit</artifactId>
-        <version>2.9.0</version>
-    </dependency>
-    <dependency>
-       <groupId>com.squareup.retrofit2</groupId>
-    <artifactId>converter-jackson</artifactId>
-    <version>2.9.0</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>compile</scope>
     </dependency>
 
-    <dependency>
-      <groupId>com.github.ezequieljsosa</groupId>
-      <artifactId>dds-eval-tp2025</artifactId>
-      <version>0.0.7</version>
-    </dependency>
+
 
     <!-- Spring Boot Test -->
     <dependency>
@@ -93,6 +85,32 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Libs -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.17.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-jackson</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
+
+  
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -101,6 +119,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
+        <mainClass>ar.edu.utn.dds.k3003.Application</mainClass> 
           <excludes>
             <exclude>
               <groupId>org.projectlombok</groupId>

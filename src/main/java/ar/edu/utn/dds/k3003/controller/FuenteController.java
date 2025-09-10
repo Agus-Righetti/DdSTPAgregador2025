@@ -1,36 +1,31 @@
 package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.facades.dtos.FuenteDTO;
-import ar.edu.utn.dds.k3003.app.Fachada;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import ar.edu.utn.dds.k3003.dtos.FuenteDTO;
+import ar.edu.utn.dds.k3003.facades.IFachadaAgregador;
 
 @RestController
-@RequestMapping("/fuentes")
+@RequestMapping("/api/fuentes")
 public class FuenteController {
-	private final Fachada fachadaAgregador;
-	
-    @Autowired
-    public FuenteController(Fachada fachadaAgregador) {
+
+    private final IFachadaAgregador fachadaAgregador;
+
+    public FuenteController(IFachadaAgregador fachadaAgregador) {
         this.fachadaAgregador = fachadaAgregador;
     }
+
     @GetMapping
-    public ResponseEntity<List<FuenteDTO>> getFuentes(){
-    	return ResponseEntity.ok(fachadaAgregador.fuentes());
+    public ResponseEntity<List<FuenteDTO>> fuentes() {
+        return ResponseEntity.ok(fachadaAgregador.fuentes());
     }
+
     @PostMapping
-    public ResponseEntity<FuenteDTO> crearFuente(@RequestBody FuenteDTO fuente) {
-        return ResponseEntity.ok(fachadaAgregador.agregar(fuente));
+    public ResponseEntity<FuenteDTO> agregarFuente(@RequestBody FuenteDTO fuenteDTO) {
+        return ResponseEntity.ok(fachadaAgregador.agregar(fuenteDTO));
     }
-	
+
 }
-
-
-

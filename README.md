@@ -1,3 +1,3 @@
-# 2025-tp-template
-Template para TP UTN-DDS Sábados 
-Tp de Igal Pisterman Rozenek , legajo 1755882
+# 2025-tp
+Zoe Dominguez Carballo
+>*Nota: Algunos commits están con mi cuenta personal **(Mondlua)** y no la institucional **(ZoeDominguez)**, por cambios en las credenciales de git en mi computadora*
