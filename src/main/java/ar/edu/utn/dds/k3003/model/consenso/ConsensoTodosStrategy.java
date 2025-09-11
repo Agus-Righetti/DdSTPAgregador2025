@@ -9,6 +9,7 @@ public class ConsensoTodosStrategy implements ConsensoStrategy {
 
     @Override
     public List<HechoDTO> aplicar(List<HechoDTO> hechosConDuplicados, int cantidadFuentes) {
+        // System.out.println("Aplicando consenso todos");
         return hechosConDuplicados
             .stream()
             .collect(Collectors.toMap(HechoDTO::titulo, h -> h, (h1, h2) -> h1))

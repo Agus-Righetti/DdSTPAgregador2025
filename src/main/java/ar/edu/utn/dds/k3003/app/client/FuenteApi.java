@@ -9,7 +9,7 @@ import retrofit2.http.Path;
 
 public interface FuenteApi {
 
-    @GET("coleccion/{nombre}/hechos")
+    @GET("api/colecciones/{nombre}/hechos")
     Call<List<HechoDTO>> listarHechosPorColeccion(@Path("nombre") String nombre);
 }
 

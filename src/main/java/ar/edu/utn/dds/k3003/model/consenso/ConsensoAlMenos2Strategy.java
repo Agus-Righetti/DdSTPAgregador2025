@@ -10,6 +10,7 @@ public class ConsensoAlMenos2Strategy implements ConsensoStrategy {
 
     @Override
     public List<HechoDTO> aplicar(List<HechoDTO> hechosConDuplicados, int cantidadFuentes) {
+        // System.out.println("Aplicando consenso al menos 2");
         if (cantidadFuentes <= 1) {
             return new ConsensoTodosStrategy().aplicar(hechosConDuplicados, cantidadFuentes);
         }

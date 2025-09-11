@@ -28,13 +28,19 @@ public class Agregador {
     }
 
     public List<HechoDTO> findHechos(String nombreColeccion, List<Fuente> fuentes) {
-        List<HechoDTO> todosLosHechos = new ArrayList<>();
+        List<HechoDTO> todosLosHechos = new ArrayList<HechoDTO>();
         for (Fuente fuente : fuentes) {
             try {
+                // System.out.println("Obteniendo hechos de la fuente " + fuente.getNombre());
+                // System.out.println("Endpoint: " + fuente.getEndpoint());
+                // System.out.println("Nombre Coleccion: " + nombreColeccion);
                 FuenteApi api = RetrofitFactory.build(fuente.getEndpoint(), objectMapper).create(FuenteApi.class);
                 Response<List<HechoDTO>> response = api.listarHechosPorColeccion(nombreColeccion).execute();
+                System.out.println("Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
+                    // System.out.println("Hechos: " + response.body());
                     todosLosHechos.addAll(response.body());
+                    // System.out.println("Todos los hechos size: " + todosLosHechos.size());
                 }
             } catch (Exception ex) {
                 System.err.println("Error al obtener hechos de la fuente " + fuente.getNombre() + ": " + ex.getMessage());
