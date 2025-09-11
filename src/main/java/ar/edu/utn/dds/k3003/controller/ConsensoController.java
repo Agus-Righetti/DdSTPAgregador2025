@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.controller;
 
-import java.util.Map;
+import ar.edu.utn.dds.k3003.dtos.ConsensoRequestDTO;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,13 +21,17 @@ public class ConsensoController {
         this.fachadaAgregador = fachadaAgregador;
     }
 
-    // @PatchMapping
-    // public ResponseEntity<Void> configurarConsenso(@RequestBody Map<String, String> body) {
-    //     ConsensosEnum consenso = ConsensosEnum.valueOf(body.get("tipo").toUpperCase());
-    //     String coleccion = body.get("coleccion");
+    @PatchMapping
+    public ResponseEntity<Void> configurarConsenso(@RequestBody ConsensoRequestDTO body) {
+        ConsensosEnum consenso = body.tipo();
+        String coleccion = body.coleccion();
 
-    //     fachadaAgregador.setConsensoStrategy(consenso, coleccion);
-    //     return ResponseEntity.noContent().build();
-    // }
+        if (consenso == null) {
+            throw new IllegalArgumentException("Falta el tipo de consenso");
+        }
+
+        fachadaAgregador.setConsensoStrategy(consenso, coleccion);
+        return ResponseEntity.noContent().build();
+    }
 
 }

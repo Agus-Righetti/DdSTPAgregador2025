@@ -16,11 +16,11 @@ public interface IFachadaAgregador {
 
   FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException;
 
-  List<HechoDTO> hechos(String coleccionId) throws NoSuchElementException;
+  List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException;
 
   // void addFachadaFuentes(String fuenteId, FachadaFuente fuente);
 
-  void setConsensoStrategy(ConsensosEnum tipoConsenso, String coleccionId)
+  void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
       throws InvalidParameterException;
 
 }
