@@ -39,7 +39,10 @@ public class Agregador {
                 System.out.println("Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     // System.out.println("Hechos: " + response.body());
-                    todosLosHechos.addAll(response.body());
+                    List<HechoDTO> hechosFuente = response.body();
+                    // Persistimos temporalmente en la entidad para reuso por estrategias de consenso
+                    fuente.setHechos(hechosFuente);
+                    todosLosHechos.addAll(hechosFuente);
                     // System.out.println("Todos los hechos size: " + todosLosHechos.size());
                 }
             } catch (Exception ex) {
@@ -50,6 +53,7 @@ public class Agregador {
         if (consensoStrategy == null) {
             return todosLosHechos;
         }
-        return consensoStrategy.aplicar(todosLosHechos, fuentes.size());
+        // A partir de aquí el Strategy pattern opera sobre las fuentes completas, no sólo una lista plana de hechos
+        return consensoStrategy.aplicar(fuentes);
     }
 }
