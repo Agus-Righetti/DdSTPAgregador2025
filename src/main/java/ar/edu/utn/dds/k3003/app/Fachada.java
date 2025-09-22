@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
+
+import ar.edu.utn.dds.k3003.app.client.SolicitudesProxy;
+import ar.edu.utn.dds.k3003.model.consenso.ConsensoEstrictoStrategy;
 import org.springframework.stereotype.Service;
 
 // no-op
@@ -24,73 +27,75 @@ import ar.edu.utn.dds.k3003.repository.IConsensoColeccionRepository;
 @Service
 public class Fachada implements IFachadaAgregador {
 
-  private final IFuenteRepository fuenteRepository;
-  private final IConsensoColeccionRepository consensoRepository;
-  private final Agregador agregador;
+    private final IFuenteRepository fuenteRepository;
+    private final IConsensoColeccionRepository consensoRepository;
+    private final Agregador agregador;
+    private final SolicitudesProxy solicitudesProxy;
 
-  public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador) {
-    this.fuenteRepository = fuenteRepository;
-    this.consensoRepository = consensoRepository;
-    this.agregador = agregador;
-  }
+    public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador, SolicitudesProxy solicitudesProxy) {
+        this.fuenteRepository = fuenteRepository;
+        this.consensoRepository = consensoRepository;
+        this.agregador = agregador;
+        this.solicitudesProxy = solicitudesProxy;
+    }
 
-  @Override
-  public FuenteDTO agregar(FuenteDTO fuente) {
-    String id = (fuente.id() == null || fuente.id().isBlank()) ? UUID.randomUUID().toString() : fuente.id();
-    Fuente entity = new Fuente(id, fuente.nombre(), fuente.endpoint());
-    Fuente saved = fuenteRepository.save(entity);
-    return new FuenteDTO(saved.getId(), saved.getNombre(), saved.getEndpoint());
-  }
+    @Override
+    public FuenteDTO agregar(FuenteDTO fuente) {
+        String id = (fuente.id() == null || fuente.id().isBlank()) ? UUID.randomUUID().toString() : fuente.id();
+        Fuente entity = new Fuente(id, fuente.nombre(), fuente.endpoint());
+        Fuente saved = fuenteRepository.save(entity);
+        return new FuenteDTO(saved.getId(), saved.getNombre(), saved.getEndpoint());
+    }
 
-  @Override
-  public List<FuenteDTO> fuentes() {
+    @Override
+    public List<FuenteDTO> fuentes() {
     return fuenteRepository
         .findAll()
         .stream()
         .map(f -> new FuenteDTO(f.getId(), f.getNombre(), f.getEndpoint()))
         .toList();
-  }
+    }
 
-  @Override
-  public FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException {
+    @Override
+    public FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException {
     return fuenteRepository
-      .findById(fuenteId)
-      .map(f -> new FuenteDTO(f.getId(), f.getNombre(), f.getEndpoint()))
-      .orElseThrow(() -> new NoSuchElementException("Fuente no encontrada: " + fuenteId));
-  }
-
-  @Override
-  public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
-    List<Fuente> fuentes = fuenteRepository.findAll();
-    // System.out.println("Fuentes: " + fuentes);
-    // System.out.println("Nombre Coleccion: " + nombreColeccion);
-    if (fuentes.isEmpty()) {
-      return List.of();
+        .findById(fuenteId)
+        .map(f -> new FuenteDTO(f.getId(), f.getNombre(), f.getEndpoint()))
+        .orElseThrow(() -> new NoSuchElementException("Fuente no encontrada: " + fuenteId));
     }
 
-    ConsensosEnum consenso = consensoRepository.findById(nombreColeccion)
-      .map(ConsensoColeccion::getTipoConsenso)
-      .orElse(ConsensosEnum.TODOS);
-    // System.out.println("Consenso: " + consenso);
+    @Override
+    public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
+        List<Fuente> fuentes = fuenteRepository.findAll();
+        // System.out.println("Fuentes: " + fuentes);
+        // System.out.println("Nombre Coleccion: " + nombreColeccion);
+        if (fuentes.isEmpty()) {
+            return List.of();
+        }
 
-    agregador.setConsensoStrategy(getStrategyByConsenso(consenso));
-    return agregador.findHechos(nombreColeccion, fuentes);
-  }
+        ConsensosEnum consenso = consensoRepository.findById(nombreColeccion)
+            .map(ConsensoColeccion::getTipoConsenso)
+            .orElse(ConsensosEnum.TODOS);
+        // System.out.println("Consenso: " + consenso);
 
-  @Override
-  public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion) throws InvalidParameterException {
-    if (tipoConsenso == null || nombreColeccion == null || nombreColeccion.isBlank()) {
-      throw new InvalidParameterException("Parámetros inválidos para configurar consenso");
+        agregador.setConsensoStrategy(getStrategyByConsenso(consenso));
+        return agregador.findHechos(nombreColeccion, fuentes);
     }
+
+    @Override
+    public void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion) throws InvalidParameterException {
+        if (tipoConsenso == null || nombreColeccion == null || nombreColeccion.isBlank()) {
+            throw new InvalidParameterException("Parámetros inválidos para configurar consenso");
+        }
     // Upsert utilizando la PK (nombreColeccion) como ID
     consensoRepository.save(new ConsensoColeccion(nombreColeccion, tipoConsenso));
-  }
+    }
 
-  private ConsensoStrategy getStrategyByConsenso(ConsensosEnum consenso) {
-    return switch (consenso) {
-      case AL_MENOS_2 -> new ConsensoAlMenos2Strategy();
-      case TODOS -> new ConsensoTodosStrategy();
-    };
-  }
-
+    private ConsensoStrategy getStrategyByConsenso(ConsensosEnum consenso) {
+        return switch (consenso) {
+            case AL_MENOS_2 -> new ConsensoAlMenos2Strategy();
+            case TODOS -> new ConsensoTodosStrategy();
+            case ESTRICTO -> new ConsensoEstrictoStrategy(solicitudesProxy);
+        };
+    }
 }

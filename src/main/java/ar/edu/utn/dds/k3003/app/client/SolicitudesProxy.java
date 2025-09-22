@@ -1,0 +1,46 @@
+package ar.edu.utn.dds.k3003.app.client;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+
+import java.io.IOException;
+
+@Component
+public class SolicitudesProxy
+{
+    private final String endpoint;
+    private final SolicitudesRetrofitClient service;
+
+    public SolicitudesProxy(ObjectMapper objectMapper)
+    {
+        var env = System.getenv();
+        this.endpoint = env.getOrDefault("URL_SOLICITUDES", "https://ddstp2025.onrender.com/");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(this.endpoint)
+                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .build();
+
+        this.service = retrofit.create(SolicitudesRetrofitClient.class);
+    }
+
+    public boolean estaActivo(String hechoId)
+    {
+        try {
+            Response<Boolean> response = service.estaActivo(hechoId).execute();
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body();
+            } else {
+                // Si la respuesta no es exitosa o el cuerpo es nulo, asumimos que no hay solicitudes activas.
+                return true;
+            }
+        } catch (IOException e) {
+            // Manejo de errores de red o comunicación
+            throw new RuntimeException("Error de comunicación con el servicio de Solicitudes", e);
+        }
+    }
+}
