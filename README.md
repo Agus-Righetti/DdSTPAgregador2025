@@ -1,11 +1,11 @@
 # Grupo 6 - Agregador
 
-| Nombre            | Componente     | Repositorio                                                                 | Render                                                                   |
-|-------------------|----------------|-----------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| Franco di Nápoli  | Fuentes        | [Repo Fuentes](https://github.com/FrancoAdN/tp-dds-fuentes)                 | [Render Fuentes](https://tp-dds-fuentes.onrender.com/)                   |
-| Sebastián Balás   | Procesador PDI | [Repo Procesador PDI](https://github.com/Sebabalas/2025-tp-anual-Sebabalas) | [Render Procesador PDI](https://two025-tp-anual-sebabalas.onrender.com/) | 
-| Agustina Righetti | Solicitudes    | [Repo Solicitudes](https://github.com/Agus-Righetti/DdSTPSolicitudes2025)   | [Render Solicitudes](https://ddstp2025.onrender.com)                     |
-|                   | Agregador      | [Repo Agregador](https://github.com/Agus-Righetti/DdSTPAgregador2025)       | [Render Agregador](https://ddstpagregador2025-qsza.onrender.com/)                                                     |
+|       Nombre       |   Componente   |                                 Repositorio                                 |                                  Render                                  |
+|:------------------:|:--------------:|:---------------------------------------------------------------------------:|:------------------------------------------------------------------------:|
+|  Franco di Nápoli  |    Fuentes     |         [Repo Fuentes](https://github.com/FrancoAdN/tp-dds-fuentes)         |          [Render Fuentes](https://tp-dds-fuentes.onrender.com/)          |
+|  Sebastián Balás   | Procesador PDI | [Repo Procesador PDI](https://github.com/Sebabalas/2025-tp-anual-Sebabalas) | [Render Procesador PDI](https://two025-tp-anual-sebabalas.onrender.com/) |
+| Agustina Righetti  |  Solicitudes   |  [Repo Solicitudes](https://github.com/Agus-Righetti/DdSTPSolicitudes2025)  |           [Render Solicitudes](https://ddstp2025.onrender.com)           |
+|                    |   Agregador    |   [Repo Agregador](https://github.com/Agus-Righetti/DdSTPAgregador2025)     | [Render Agregador](https://ddstpagregador2025-qsza.onrender.com/)        |
 
 - [Datadog](https://app.datadoghq.com/help/quick_start)
 ---
