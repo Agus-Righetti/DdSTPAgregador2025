@@ -25,6 +25,7 @@ public class ConsensoEstrictoStrategy implements ConsensoStrategy
                 .toList();
 
         // Filtramos los hechos que no tienen solicitudes de eliminación aceptadas
+        // No hay solicitudes cuando un hecho esta activo
         return todosLosHechos.stream()
                 .filter(hecho -> solicitudesProxy.estaActivo(hecho.id()))
                 .collect(Collectors.toList());
