@@ -39,8 +39,7 @@ public class SolicitudesProxy
                 return true;
             }
         } catch (IOException e) {
-            // Manejo de errores de red o comunicación
-            throw new RuntimeException("Error de comunicación con el servicio de Solicitudes", e);
+            return false;
         }
     }
 }
