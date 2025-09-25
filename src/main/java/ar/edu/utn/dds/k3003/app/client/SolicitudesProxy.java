@@ -28,18 +28,18 @@ public class SolicitudesProxy
         this.service = retrofit.create(SolicitudesRetrofitClient.class);
     }
 
-    public boolean estaActivo(String hechoId)
+    public boolean tieneSolicitudes(String hechoId)
     {
         try {
-            Response<Boolean> response = service.estaActivo(hechoId).execute();
+            Response<Boolean> response = service.tieneSolicitudes(hechoId).execute();
             if (response.isSuccessful() && response.body() != null) {
                 return response.body();
             } else {
-                // Si la respuesta no es exitosa o el cuerpo es nulo, asumimos que no hay solicitudes activas.
+                // Tiene solicitudes
                 return true;
             }
         } catch (IOException e) {
-            return false;
+            throw new RuntimeException("Error de comunicación con el servicio de solicitudes.", e);
         }
     }
 }

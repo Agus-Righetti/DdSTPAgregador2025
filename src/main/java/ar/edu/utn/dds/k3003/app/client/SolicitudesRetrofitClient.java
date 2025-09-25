@@ -6,6 +6,6 @@ import retrofit2.http.Query;
 
 public interface SolicitudesRetrofitClient
 {
-    @GET("api/solicitudes/activo")
-    Call<Boolean> estaActivo(@Query("hecho") String hecho);
+    @GET("api/solicitudes/tieneSolicitudes")
+    Call<Boolean> tieneSolicitudes(@Query("hecho") String hecho);
 }
