@@ -98,4 +98,10 @@ public class Fachada implements IFachadaAgregador {
             case ESTRICTO -> new ConsensoEstrictoStrategy(solicitudesProxy);
         };
     }
+
+    @Override
+    public void borrarTodasLasFuentes()
+    {
+        this.fuenteRepository.deleteAll();
+    }
 }

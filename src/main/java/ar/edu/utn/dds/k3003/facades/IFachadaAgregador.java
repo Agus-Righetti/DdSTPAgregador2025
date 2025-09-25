@@ -23,4 +23,5 @@ public interface IFachadaAgregador {
   void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
       throws InvalidParameterException;
 
+    void borrarTodasLasFuentes();
 }
