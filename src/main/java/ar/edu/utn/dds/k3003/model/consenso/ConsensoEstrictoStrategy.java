@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Fuente;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ConsensoEstrictoStrategy implements ConsensoStrategy
@@ -19,14 +20,14 @@ public class ConsensoEstrictoStrategy implements ConsensoStrategy
     @Override
     public List<HechoDTO> aplicar(List<Fuente> fuentes)
     {
-        // Obtenemos todos los hechos de todas las fuentes
-        List<HechoDTO> todosLosHechos = fuentes.stream()
+        // Obtenemos todos los hechos de todas las fuentes sin repeticiones
+        Set<HechoDTO> hechosUnicos = fuentes.stream()
                 .flatMap(f -> f.getHechos().stream())
-                .toList();
+                .collect(Collectors.toSet());
 
         // Filtramos los hechos que no tienen solicitudes de eliminación aceptadas
         // No hay solicitudes cuando un hecho esta activo
-        return todosLosHechos.stream()
+        return hechosUnicos.stream()
                 .filter(hecho -> !solicitudesProxy.tieneSolicitudes(hecho.id()))
                 .collect(Collectors.toList());
     }
