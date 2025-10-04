@@ -67,8 +67,6 @@ public class Fachada implements IFachadaAgregador {
     @Override
     public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException {
         List<Fuente> fuentes = fuenteRepository.findAll();
-        // System.out.println("Fuentes: " + fuentes);
-        // System.out.println("Nombre Coleccion: " + nombreColeccion);
         if (fuentes.isEmpty()) {
             return List.of();
         }
@@ -76,10 +74,12 @@ public class Fachada implements IFachadaAgregador {
         ConsensosEnum consenso = consensoRepository.findById(nombreColeccion)
             .map(ConsensoColeccion::getTipoConsenso)
             .orElse(ConsensosEnum.TODOS);
-        // System.out.println("Consenso: " + consenso);
 
         agregador.setConsensoStrategy(getStrategyByConsenso(consenso));
-        return agregador.findHechos(nombreColeccion, fuentes);
+        return agregador.findHechos(nombreColeccion, fuentes)
+                .stream()
+                .distinct()
+                .toList();
     }
 
     @Override

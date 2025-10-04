@@ -33,6 +33,7 @@ public class SolicitudesProxy
         try {
             Response<Boolean> response = service.tieneSolicitudes(hechoId).execute();
             if (response.isSuccessful() && response.body() != null) {
+                System.out.println("[LOG][SolicitudesProxy] Body: " + response.body() + " para hechoId: " + hechoId);
                 return response.body();
             } else {
                 // Tiene solicitudes
