@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.repository;
+package ar.edu.utn.dds.k3003.repository.jpa;
 
 import java.util.Optional;
 

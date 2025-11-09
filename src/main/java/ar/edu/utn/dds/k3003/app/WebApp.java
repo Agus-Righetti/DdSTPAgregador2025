@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
@@ -14,7 +15,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "ar.edu.utn.dds.k3003.repository",
         "ar.edu.utn.dds.k3003.app"
 })
-@EnableJpaRepositories(basePackages = "ar.edu.utn.dds.k3003.repository")
+@EnableJpaRepositories(basePackages = "ar.edu.utn.dds.k3003.repository.jpa")
+@EnableMongoRepositories(basePackages = "ar.edu.utn.dds.k3003.repository.mongo")
 @EntityScan(basePackages = "ar.edu.utn.dds.k3003.model")
 public class WebApp
 {
