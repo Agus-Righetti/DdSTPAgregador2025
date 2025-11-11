@@ -5,6 +5,8 @@ import ar.edu.utn.dds.k3003.facades.IFachadaAgregador;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/busqueda")
 public class BusquedaController
@@ -19,7 +21,7 @@ public class BusquedaController
     @GetMapping
     public ResponseEntity<PaginacionDTO> buscarHechos(
             @RequestParam(name = "query") String palabraClave, // Obligatorio
-            @RequestParam(name = "tag", required = false) String tag, // Opcional (filtro AND)
+            @RequestParam(name = "tags", required = false) List<String> tags, // Acepta múltiples tags
             @RequestParam(name = "page", defaultValue = "0") int pagina,
             @RequestParam(name = "size", defaultValue = "10") int tamanoPagina)
     {
@@ -30,7 +32,7 @@ public class BusquedaController
             return ResponseEntity.badRequest().build();
         }
 
-        PaginacionDTO resultados = fachada.buscar(palabraClave, tag, pagina, tamanoPagina);
+        PaginacionDTO resultados = fachada.buscar(palabraClave, tags, pagina, tamanoPagina);
         return ResponseEntity.ok(resultados);
     }
 }

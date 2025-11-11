@@ -20,6 +20,5 @@ public interface IFachadaAgregador
     void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
         throws InvalidParameterException;
     void borrarTodasLasFuentes();
-    PaginacionDTO buscar(String palabraClave, String tag, int pagina, int tamanioPagina);
-
+    PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina);
 }

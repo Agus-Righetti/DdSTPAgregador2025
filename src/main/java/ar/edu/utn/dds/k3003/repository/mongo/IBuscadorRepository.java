@@ -11,13 +11,17 @@ import java.util.List;
 @Repository
 public interface IBuscadorRepository extends MongoRepository<HechoDocument, String>
 {
-    @org.springframework.data.mongodb.repository.Query("{$text: {$search: ?0}, 'tags': {$in: [?1]}, 'esta_borrado': false}")
-    Page<HechoDocument> buscarPorTextoYTag(String palabraClave, String tag, Pageable pageable);
+    // Criterio AND para tags: 'tags': {$all: ?1} y recibir List<String>
+    @org.springframework.data.mongodb.repository.Query("{$and: [{$text: {$search: ?0}}, {'tags': {$all: ?1}}, {'esta_borrado': false}]}")
+    Page<HechoDocument> buscarPorTextoYTags(String palabraClave, List<String> tags, Pageable pageable);
 
-    @org.springframework.data.mongodb.repository.Query("{$text: {$search: ?0}, 'esta_borrado': false}")
+    @org.springframework.data.mongodb.repository.Query("{$and: [{$text: {$search: ?0}}, {'esta_borrado': false}]}")
     Page<HechoDocument> buscarPorTexto(String palabraClave, Pageable pageable);
 
-    HechoDocument findByHechoId(String hechoId);
+    // Solo por tags (para cuando no hay palabra clave)
+    @org.springframework.data.mongodb.repository.Query("{$and: [{'tags': {$all: ?0}}, {'esta_borrado': false}]}")
+    Page<HechoDocument> buscarPorTags(List<String> tags, Pageable pageable);
 
+    HechoDocument findByHechoId(String hechoId);
     List<HechoDocument> findByTituloAndEstaBorradoIsFalse(String titulo);
 }

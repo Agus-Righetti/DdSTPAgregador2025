@@ -124,19 +124,29 @@ public class Fachada implements IFachadaAgregador
     }
 
     @Override
-    public PaginacionDTO buscar(String palabraClave, String tag, int pagina, int tamanoPagina)
+    public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
         int size = Math.min(tamanoPagina, 50);
         Pageable pageable = PageRequest.of(pagina, size);
         Page<HechoDocument> resultados;
 
-        if (tag != null && !tag.isBlank())
+        boolean hayTags = tags != null && !tags.isEmpty();
+        boolean hayPalabraClave = palabraClave != null && !palabraClave.isBlank();
+
+        if (hayPalabraClave && hayTags)
         {
-            resultados = buscadorRepository.buscarPorTextoYTag(palabraClave, tag, pageable);
-        }
-        else
-        {
-            resultados = buscadorRepository.buscarPorTexto(palabraClave, pageable);
+            // Opción 1: Texto Y Tags (AND)
+            resultados = buscadorRepository.buscarPorTextoYTags(palabraClave, tags, pageable);
+        } else if (hayTags) {
+            // Opción 2: Solo Tags (AND)
+            resultados = buscadorRepository.buscarPorTags(tags, pageable);
+        } else if (hayPalabraClave) {
+            // Opción 3: Solo Texto
+            // Se sugiere encerrar la palabra clave entre comillas para un "exact match" en el índice de texto
+            resultados = buscadorRepository.buscarPorTexto("\"" + palabraClave + "\"", pageable);
+        } else {
+            // Opción 4: Sin filtros (devuelve vacío o lo que consideren mejor, por ahora vacío)
+            return new PaginacionDTO(List.of(), 0, 0, pagina);
         }
 
         List<HechoDTO> hechosDTO = resultados.getContent().stream()
