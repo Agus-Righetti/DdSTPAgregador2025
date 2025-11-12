@@ -8,6 +8,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class SolicitudesProxy
@@ -30,16 +33,40 @@ public class SolicitudesProxy
 
     public boolean tieneSolicitudes(String hechoId)
     {
-        try {
+        try
+        {
             Response<Boolean> response = service.tieneSolicitudes(hechoId).execute();
-            if (response.isSuccessful() && response.body() != null) {
+            if (response.isSuccessful() && response.body() != null)
+            {
                 System.out.println("[LOG][SolicitudesProxy] Body: " + response.body() + " para hechoId: " + hechoId);
                 return response.body();
             } else {
                 // Tiene solicitudes
                 return true;
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
+            throw new RuntimeException("Error de comunicación con el servicio de solicitudes.", e);
+        }
+    }
+
+    public Map<String, Boolean> tienenSolicitudes(List<String> hechoIds)
+    {
+        try
+        {
+            Response<Map<String, Boolean>> response = service.tienenSolicitudes(hechoIds).execute();
+            if (response.isSuccessful() && response.body() != null)
+            {
+                System.out.println("[LOG][SolicitudesProxy] Body: " + response.body());
+                return response.body();
+            }
+            else // TODO
+            {
+                return hechoIds.stream().collect(Collectors.toMap(id -> id, id -> true));
+            }
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException("Error de comunicación con el servicio de solicitudes.", e);
         }
     }
