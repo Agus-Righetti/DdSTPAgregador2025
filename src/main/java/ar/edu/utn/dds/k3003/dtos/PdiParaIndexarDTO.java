@@ -12,5 +12,4 @@ public record PdiParaIndexarDTO(
 
         // Tags generados por el Etiquetador para el filtro AND
         List<String> tags)
-{
-}
+{}

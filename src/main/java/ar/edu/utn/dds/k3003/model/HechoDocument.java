@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class HechoDocument {
 
     @Id
-    private String mongoId;
+    private String mongoId; // Generado por MongoDB
 
     @Field("hecho_id")
     private String hechoId;
@@ -25,11 +25,11 @@ public class HechoDocument {
     @Field("nombre_coleccion")
     private String nombreColeccion;
 
-    @TextIndexed(weight = 5)
+    // @TextIndexed(weight = 5) // Mayor relevancia al título
     private String titulo;
 
-    @TextIndexed(weight = 3)
-    private String contenidoTextoIndexable;
+    @TextIndexed(weight = 3) // Menor relevancia a la descripción
+    private String contenidoTextoIndexable; // Descripción del hecho, descripciones de los PDIs, resultado del OCR y resultado del Etiquetador.
 
     @Field("tags")
     private List<String> tags; // Para el filtro AND

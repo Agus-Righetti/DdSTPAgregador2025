@@ -10,6 +10,7 @@ import ar.edu.utn.dds.k3003.enums.EstadoHechoEnum;
 import ar.edu.utn.dds.k3003.model.HechoDocument;
 import ar.edu.utn.dds.k3003.model.consenso.ConsensoEstrictoStrategy;
 import ar.edu.utn.dds.k3003.repository.mongo.IBuscadorRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,14 +39,16 @@ public class Fachada implements IFachadaAgregador
     private final Agregador agregador;
     private final SolicitudesProxy solicitudesProxy;
     private final IBuscadorRepository buscadorRepository;
+    private final MeterRegistry meterRegistry;
 
-    public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador, SolicitudesProxy solicitudesProxy, IBuscadorRepository buscadorRepository)
+    public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador, SolicitudesProxy solicitudesProxy, IBuscadorRepository buscadorRepository, MeterRegistry meterRegistry)
     {
         this.fuenteRepository = fuenteRepository;
         this.consensoRepository = consensoRepository;
         this.agregador = agregador;
         this.solicitudesProxy = solicitudesProxy;
         this.buscadorRepository = buscadorRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
@@ -124,6 +127,8 @@ public class Fachada implements IFachadaAgregador
     @Override
     public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
+        meterRegistry.counter("busquedas_realizadas", "tipo", "hechos").increment();
+
         Pageable pageable = PageRequest.of(pagina, tamanoPagina);
         Page<HechoDocument> resultados;
 
@@ -150,7 +155,7 @@ public class Fachada implements IFachadaAgregador
         Set<String> titulosYaVistos = new HashSet<>();
         List<HechoDTO> hechosDTO = resultados.getContent().stream()
                 .filter(doc -> titulosYaVistos.add(doc.getTitulo())) // Solo acepta el primer documento con ese título
-                .map(this::mapToHechoDTO)
+                .map(doc -> (HechoDTO) doc.getHechoDTOData())
                 .collect(Collectors.toList());
 
         return new PaginacionDTO(
@@ -160,20 +165,4 @@ public class Fachada implements IFachadaAgregador
                 resultados.getNumber()
         );
     }
-
-    private HechoDTO mapToHechoDTO(HechoDocument doc)
-    {
-        return new HechoDTO(
-            doc.getNombreColeccion(),
-            doc.getTitulo(),
-            doc.getTags(),
-            null, // CategoriaHechoEnum categoria
-            null, // String ubicacion
-            null, // LocalDate fecha
-            null, // String origen
-            doc.isEstaBorrado() ? EstadoHechoEnum.BORRADO : EstadoHechoEnum.PENDIENTE,
-            doc.getHechoId()
-        );
-    }
-
 }
