@@ -142,7 +142,6 @@ public class Fachada implements IFachadaAgregador
             resultados = buscadorRepository.buscarPorTags(tags, pageable);
         } else if (hayPalabraClave) {
             // Opción 3: Solo Texto
-            // Se sugiere encerrar la palabra clave entre comillas para un "exact match" en el índice de texto
             resultados = buscadorRepository.buscarPorTexto("\"" + palabraClave + "\"", pageable);
         } else {
             // Opción 4: Sin filtros (devuelve vacío o lo que consideren mejor, por ahora vacío)

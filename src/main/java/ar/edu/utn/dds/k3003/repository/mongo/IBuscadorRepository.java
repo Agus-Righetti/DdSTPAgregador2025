@@ -15,6 +15,7 @@ public interface IBuscadorRepository extends MongoRepository<HechoDocument, Stri
     @org.springframework.data.mongodb.repository.Query("{$and: [{$text: {$search: ?0}}, {'tags': {$all: ?1}}, {'esta_borrado': false}]}")
     Page<HechoDocument> buscarPorTextoYTags(String palabraClave, List<String> tags, Pageable pageable);
 
+    // Solo por texto, palabra clave
     @org.springframework.data.mongodb.repository.Query("{$and: [{$text: {$search: ?0}}, {'esta_borrado': false}]}")
     Page<HechoDocument> buscarPorTexto(String palabraClave, Pageable pageable);
 
