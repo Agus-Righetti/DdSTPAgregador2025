@@ -1,9 +1,7 @@
 package ar.edu.utn.dds.k3003.app;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.security.InvalidParameterException;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import ar.edu.utn.dds.k3003.app.client.SolicitudesProxy;
@@ -126,36 +124,39 @@ public class Fachada implements IFachadaAgregador
     @Override
     public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
-        int size = Math.min(tamanoPagina, 50);
-        Pageable pageable = PageRequest.of(pagina, size);
+        Pageable pageable = PageRequest.of(pagina, tamanoPagina);
         Page<HechoDocument> resultados;
 
+        String textoBusqueda = palabraClave;
+
+        boolean hayPalabraClave = textoBusqueda != null && !textoBusqueda.isBlank();
         boolean hayTags = tags != null && !tags.isEmpty();
-        boolean hayPalabraClave = palabraClave != null && !palabraClave.isBlank();
 
         if (hayPalabraClave && hayTags)
         {
-            // Opción 1: Texto Y Tags (AND)
-            resultados = buscadorRepository.buscarPorTextoYTags(palabraClave, tags, pageable);
+            // Texto Y Tags (AND)
+            resultados = buscadorRepository.buscarPorTextoYTags(textoBusqueda, tags, pageable);
         } else if (hayTags) {
-            // Opción 2: Solo Tags (AND)
+            // Solo Tags (AND)
             resultados = buscadorRepository.buscarPorTags(tags, pageable);
         } else if (hayPalabraClave) {
-            // Opción 3: Solo Texto
-            resultados = buscadorRepository.buscarPorTexto("\"" + palabraClave + "\"", pageable);
+            // Solo Texto
+            resultados = buscadorRepository.buscarPorTexto(textoBusqueda, pageable);
         } else {
-            // Opción 4: Sin filtros (devuelve vacío o lo que consideren mejor, por ahora vacío)
+            // Sin filtros
             return new PaginacionDTO(List.of(), 0, 0, pagina);
         }
 
+        Set<String> titulosYaVistos = new HashSet<>();
         List<HechoDTO> hechosDTO = resultados.getContent().stream()
+                .filter(doc -> titulosYaVistos.add(doc.getTitulo())) // Solo acepta el primer documento con ese título
                 .map(this::mapToHechoDTO)
                 .collect(Collectors.toList());
 
         return new PaginacionDTO(
                 hechosDTO,
-                resultados.getTotalPages(),
-                resultados.getTotalElements(),
+                resultados.getTotalPages(), // Páginas totales de la query, NO del resultado filtrado
+                resultados.getTotalElements(), // Elementos totales de la query, NO del resultado filtrado
                 resultados.getNumber()
         );
     }
