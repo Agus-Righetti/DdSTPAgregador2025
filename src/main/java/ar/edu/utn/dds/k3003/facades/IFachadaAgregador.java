@@ -6,22 +6,19 @@ import java.util.NoSuchElementException;
 
 import ar.edu.utn.dds.k3003.dtos.FuenteDTO;
 import ar.edu.utn.dds.k3003.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dtos.PaginacionDTO;
 import ar.edu.utn.dds.k3003.enums.ConsensosEnum;
 
-public interface IFachadaAgregador {
+public interface IFachadaAgregador
+{
 
-  FuenteDTO agregar(FuenteDTO fuente);
-
-  List<FuenteDTO> fuentes();
-
-  FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException;
-
-  List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException;
-
-  // void addFachadaFuentes(String fuenteId, FachadaFuente fuente);
-
-  void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
-      throws InvalidParameterException;
-
+    FuenteDTO agregar(FuenteDTO fuente);
+    List<FuenteDTO> fuentes();
+    FuenteDTO buscarFuenteXId(String fuenteId) throws NoSuchElementException;
+    List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException;
+    // void addFachadaFuentes(String fuenteId, FachadaFuente fuente);
+    void setConsensoStrategy(ConsensosEnum tipoConsenso, String nombreColeccion)
+        throws InvalidParameterException;
     void borrarTodasLasFuentes();
+    PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina);
 }
