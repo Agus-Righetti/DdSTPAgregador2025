@@ -22,14 +22,11 @@ public class HechoDocument {
     @Field("hecho_id")
     private String hechoId;
 
-    @Field("nombre_coleccion")
-    private String nombreColeccion;
-
-    @TextIndexed(weight = 5)
-    private String titulo;
-
     @TextIndexed(weight = 3)
     private String contenidoTextoIndexable;
+
+    @TextIndexed(weight = 3)
+    private String ocrTextoIndexable;
 
     @Field("tags")
     private List<String> tags; // Para el filtro AND

@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.dtos.PaginacionDTO;
 import ar.edu.utn.dds.k3003.facades.IFachadaAgregador;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,4 +37,11 @@ public class BusquedaController
         PaginacionDTO resultados = fachada.buscar(palabraClave, tags, pagina, tamanoPagina);
         return ResponseEntity.ok(resultados);
     }
-}
+
+    @PostMapping("/indexar")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void indexarTodo()
+    {
+        fachada.indexarTodo();
+    }
+} 

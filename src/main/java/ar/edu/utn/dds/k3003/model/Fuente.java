@@ -3,7 +3,7 @@ package ar.edu.utn.dds.k3003.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.edu.utn.dds.k3003.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dtos.HechoConPdisDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,10 +24,10 @@ public class Fuente {
     @Column(name = "endpoint", nullable = false)
     private String endpoint;
 
-    // Lista temporal de hechos obtenidos de la API para esta fuente.
+    // Lista temporal de hechos obtenidos de la API para esta fuente (con PDIs).
     // Marcada como @Transient para NO persistir en la base de datos.
     @Transient
-    private List<HechoDTO> hechos = new ArrayList<>();
+    private List<HechoConPdisDTO> hechos = new ArrayList<>();
 
 
     protected Fuente() {
@@ -51,11 +51,11 @@ public class Fuente {
         return this.endpoint;
     }
 
-    public List<HechoDTO> getHechos() {
+    public List<HechoConPdisDTO> getHechos() {
         return this.hechos;
     }
 
-    public void setHechos(List<HechoDTO> hechos) {
+    public void setHechos(List<HechoConPdisDTO> hechos) {
         this.hechos = (hechos != null) ? hechos : new ArrayList<>();
     }
 }

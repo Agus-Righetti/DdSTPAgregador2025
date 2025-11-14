@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.utn.dds.k3003.app.client.FuenteApi;
 import ar.edu.utn.dds.k3003.app.client.RetrofitFactory;
-import ar.edu.utn.dds.k3003.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dtos.HechoConPdisDTO;
 import ar.edu.utn.dds.k3003.model.consenso.ConsensoStrategy;
 import retrofit2.Response;
 
@@ -27,22 +27,21 @@ public class Agregador {
         this.consensoStrategy = consensoStrategy;
     }
 
-    public List<HechoDTO> findHechos(String nombreColeccion, List<Fuente> fuentes) {
-        List<HechoDTO> todosLosHechos = new ArrayList<HechoDTO>();
+    public List<HechoConPdisDTO> findHechos(String nombreColeccion, List<Fuente> fuentes) {
+        List<HechoConPdisDTO> todosLosHechos = new ArrayList<>();
         for (Fuente fuente : fuentes) {
             try {
                 // System.out.println("Obteniendo hechos de la fuente " + fuente.getNombre());
                 // System.out.println("Endpoint: " + fuente.getEndpoint());
                 // System.out.println("Nombre Coleccion: " + nombreColeccion);
                 FuenteApi api = RetrofitFactory.build(fuente.getEndpoint(), objectMapper).create(FuenteApi.class);
-                Response<List<HechoDTO>> response = api.listarHechosPorColeccion(nombreColeccion).execute();
+                Response<List<HechoConPdisDTO>> response = api.listarHechosPorColeccion(nombreColeccion).execute();
                 System.out.println("Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
-                    // System.out.println("Hechos: " + response.body());
-                    List<HechoDTO> hechosFuente = response.body();
+                    List<HechoConPdisDTO> hechosConPdis = response.body();
                     // Persistimos temporalmente en la entidad para reuso por estrategias de consenso
-                    fuente.setHechos(hechosFuente);
-                    todosLosHechos.addAll(hechosFuente);
+                    fuente.setHechos(hechosConPdis);
+                    todosLosHechos.addAll(hechosConPdis);
                     // System.out.println("Todos los hechos size: " + todosLosHechos.size());
                 }
             } catch (Exception ex) {

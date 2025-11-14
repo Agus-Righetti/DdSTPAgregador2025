@@ -25,6 +25,8 @@ import ar.edu.utn.dds.k3003.dtos.FuenteDTO;
 import ar.edu.utn.dds.k3003.model.Fuente;
 import ar.edu.utn.dds.k3003.model.ConsensoColeccion;
 import ar.edu.utn.dds.k3003.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dtos.HechoConPdisDTO;
+import ar.edu.utn.dds.k3003.dtos.HechoConPdisDTO;
 import ar.edu.utn.dds.k3003.enums.ConsensosEnum;
 import ar.edu.utn.dds.k3003.facades.IFachadaAgregador;
 import ar.edu.utn.dds.k3003.repository.jpa.IFuenteRepository;
@@ -77,7 +79,7 @@ public class Fachada implements IFachadaAgregador
     }
 
     @Override
-    public List<HechoDTO> hechos(String nombreColeccion) throws NoSuchElementException
+    public List<HechoConPdisDTO> hechos(String nombreColeccion) throws NoSuchElementException
     {
         List<Fuente> fuentes = fuenteRepository.findAll();
         if (fuentes.isEmpty()) {
@@ -122,6 +124,114 @@ public class Fachada implements IFachadaAgregador
     }
 
     @Override
+    public void indexarTodo()
+    {
+        // El índice de Mongo funciona como una vista materializada para búsqueda.
+        // Para garantizar idempotencia, limpiamos todo y volvemos a poblarlo
+        // en base a las fuentes externas y las colecciones configuradas.
+        buscadorRepository.deleteAll();
+
+        // Tomamos todas las colecciones conocidas (configuradas con consenso)
+        List<ConsensoColeccion> colecciones = consensoRepository.findAll();
+        if (colecciones.isEmpty())
+        {
+            return;
+        }
+
+        colecciones.stream()
+                .map(ConsensoColeccion::getColeccion)
+                .forEach(this::indexarColeccionInterna);
+    }
+
+    private void indexarColeccionInterna(String nombreColeccion)
+    {
+        if (nombreColeccion == null || nombreColeccion.isBlank())
+        {
+            throw new InvalidParameterException("El nombre de la colección no puede ser nulo ni vacío");
+        }
+
+        List<Fuente> fuentes = fuenteRepository.findAll();
+        if (fuentes.isEmpty())
+        {
+            return;
+        }
+
+        // Para indexar usamos siempre el consenso "TODOS" (un Hecho por título)
+        agregador.setConsensoStrategy(new ConsensoTodosStrategy());
+        List<HechoConPdisDTO> hechosConPdis = agregador.findHechos(nombreColeccion, fuentes);
+
+        hechosConPdis.stream()
+                .filter(h -> h.hecho() != null && h.hecho().id() != null && !h.hecho().id().isBlank())
+                .forEach(h -> {
+                    HechoDTO hecho = h.hecho();
+
+                    HechoDocument doc = new HechoDocument();
+                    doc.setHechoId(hecho.id());
+                    doc.setEstaBorrado(false);
+
+                    // contenidoTextoIndexable:
+                    // - título del hecho
+                    // - descripción de cada PDI
+                    // - contenido de cada PDI
+                    StringBuilder contenido = new StringBuilder();
+                    if (hecho.titulo() != null) {
+                        contenido.append(hecho.titulo()).append(" ");
+                    }
+
+                    if (h.pdis() != null) {
+                        h.pdis().forEach(pdi -> {
+                            if (pdi.descripcion() != null) {
+                                contenido.append(pdi.descripcion()).append(" ");
+                            }
+                            if (pdi.contenido() != null) {
+                                contenido.append(pdi.contenido()).append(" ");
+                            }
+                        });
+                    }
+                    doc.setContenidoTextoIndexable(contenido.toString());
+
+                    // ocrTextoIndexable: detalle de resultados tipo "OCR"
+                    StringBuilder ocrContenido = new StringBuilder();
+                    if (h.pdis() != null) {
+                        h.pdis().forEach(pdi -> {
+                            if (pdi.resultados() != null) {
+                                pdi.resultados().stream()
+                                        .filter(res -> "OCR".equalsIgnoreCase(res.tipo()) && res.detalle() != null)
+                                        .forEach(res -> ocrContenido.append(res.detalle()).append(" "));
+                            }
+                        });
+                    }
+                    doc.setOcrTextoIndexable(ocrContenido.toString());
+
+                    // tags: detalle del ETIQUETADOR, separado por comas y normalizado a lista
+                    Set<String> tags = new HashSet<>();
+                    if (h.pdis() != null) {
+                        h.pdis().forEach(pdi -> {
+                            if (pdi.resultados() != null) {
+                                pdi.resultados().stream()
+                                        .filter(res -> "ETIQUETADOR".equalsIgnoreCase(res.tipo()) && res.detalle() != null)
+                                        .forEach(res -> {
+                                            String[] partes = res.detalle().split(",");
+                                            for (String parte : partes) {
+                                                String tagNormalizado = parte.trim();
+                                                if (!tagNormalizado.isEmpty()) {
+                                                    tags.add(tagNormalizado);
+                                                }
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                    doc.setTags(new ArrayList<>(tags));
+
+                    // Guardamos el HechoConPdisDTO completo para poder reconstruirlo en las búsquedas
+                    doc.setHechoDTOData(h);
+
+                    buscadorRepository.save(doc);
+                });
+    }
+
+    @Override
     public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
         Pageable pageable = PageRequest.of(pagina, tamanoPagina);
@@ -149,8 +259,10 @@ public class Fachada implements IFachadaAgregador
 
         Set<String> titulosYaVistos = new HashSet<>();
         List<HechoDTO> hechosDTO = resultados.getContent().stream()
-                .filter(doc -> titulosYaVistos.add(doc.getTitulo())) // Solo acepta el primer documento con ese título
-                .map(this::mapToHechoDTO)
+                .map(doc -> (HechoConPdisDTO) doc.getHechoDTOData())
+                .filter(Objects::nonNull)
+                .map(HechoConPdisDTO::hecho)
+                .filter(hecho -> titulosYaVistos.add(hecho.titulo())) // Solo acepta el primer documento con ese título
                 .collect(Collectors.toList());
 
         return new PaginacionDTO(
@@ -161,19 +273,5 @@ public class Fachada implements IFachadaAgregador
         );
     }
 
-    private HechoDTO mapToHechoDTO(HechoDocument doc)
-    {
-        return new HechoDTO(
-            doc.getNombreColeccion(),
-            doc.getTitulo(),
-            doc.getTags(),
-            null, // CategoriaHechoEnum categoria
-            null, // String ubicacion
-            null, // LocalDate fecha
-            null, // String origen
-            doc.isEstaBorrado() ? EstadoHechoEnum.BORRADO : EstadoHechoEnum.PENDIENTE,
-            doc.getHechoId()
-        );
-    }
 
 }

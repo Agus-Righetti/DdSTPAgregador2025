@@ -24,5 +24,4 @@ public interface IBuscadorRepository extends MongoRepository<HechoDocument, Stri
     Page<HechoDocument> buscarPorTags(List<String> tags, Pageable pageable);
 
     HechoDocument findByHechoId(String hechoId);
-    List<HechoDocument> findByTituloAndEstaBorradoIsFalse(String titulo);
 }

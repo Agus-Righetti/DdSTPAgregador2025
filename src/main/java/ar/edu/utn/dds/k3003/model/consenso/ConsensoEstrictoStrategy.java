@@ -1,7 +1,7 @@
 package ar.edu.utn.dds.k3003.model.consenso;
 
 import ar.edu.utn.dds.k3003.app.client.SolicitudesProxy;
-import ar.edu.utn.dds.k3003.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.dtos.HechoConPdisDTO;
 import ar.edu.utn.dds.k3003.model.Fuente;
 
 import java.util.List;
@@ -21,26 +21,26 @@ public class ConsensoEstrictoStrategy implements ConsensoStrategy
     }
 
     @Override
-    public List<HechoDTO> aplicar(List<Fuente> fuentes)
+    public List<HechoConPdisDTO> aplicar(List<Fuente> fuentes)
     {
-        Set<HechoDTO> hechosUnicos = fuentes.stream()
+        Set<HechoConPdisDTO> hechosUnicos = fuentes.stream()
                 .flatMap(f -> f.getHechos().stream())
                 .collect(Collectors.toSet());
 
         List<String> hechoIds = hechosUnicos.stream()
-                .map(HechoDTO::id)
+                .map(h -> h.hecho().id())
                 .toList();
 
         List<String> blacklistTitulos = new java.util.ArrayList<>();
 
         Map<String, Boolean> estadosSolicitudes = solicitudesProxy.tienenSolicitudes(hechoIds);
 
-        List<HechoDTO> hechos = hechosUnicos.stream()
+        List<HechoConPdisDTO> hechos = hechosUnicos.stream()
                 .filter(hecho -> {
-                    boolean tieneSolicitudesActivas = estadosSolicitudes.getOrDefault(hecho.id(), true);
+                    boolean tieneSolicitudesActivas = estadosSolicitudes.getOrDefault(hecho.hecho().id(), true);
                     if(tieneSolicitudesActivas)
                     {
-                        blacklistTitulos.add(hecho.titulo());
+                        blacklistTitulos.add(hecho.hecho().titulo());
                     }
                     return !tieneSolicitudesActivas;
                 })
@@ -48,8 +48,8 @@ public class ConsensoEstrictoStrategy implements ConsensoStrategy
         System.out.println("Blacklist titulos: " + blacklistTitulos);
         return hechos.stream()
               .filter(hecho -> {
-                  boolean algo = !blacklistTitulos.contains(hecho.titulo());
-                  blacklistTitulos.add(hecho.titulo());
+                  boolean algo = !blacklistTitulos.contains(hecho.hecho().titulo());
+                  blacklistTitulos.add(hecho.hecho().titulo());
                     return algo;
               }) .collect(Collectors.toList());
     }
