@@ -129,19 +129,19 @@ public class Fachada implements IFachadaAgregador
 
         String textoBusqueda = palabraClave;
 
-        boolean hayPalabraClave = textoBusqueda != null && !textoBusqueda.isBlank();
+        boolean hayPalabraClave = palabraClave != null && !palabraClave.isBlank();
         boolean hayTags = tags != null && !tags.isEmpty();
 
         if (hayPalabraClave && hayTags)
         {
             // Texto Y Tags (AND)
-            resultados = buscadorRepository.buscarPorTextoYTags(textoBusqueda, tags, pageable);
+            resultados = buscadorRepository.buscarPorTextoYTags(palabraClave, tags, pageable);
         } else if (hayTags) {
             // Solo Tags (AND)
             resultados = buscadorRepository.buscarPorTags(tags, pageable);
         } else if (hayPalabraClave) {
             // Solo Texto
-            resultados = buscadorRepository.buscarPorTexto(textoBusqueda, pageable);
+            resultados = buscadorRepository.buscarPorTexto(palabraClave, pageable);
         } else {
             // Sin filtros
             return new PaginacionDTO(List.of(), 0, 0, pagina);
