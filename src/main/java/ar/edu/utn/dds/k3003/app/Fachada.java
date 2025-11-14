@@ -237,6 +237,13 @@ public class Fachada implements IFachadaAgregador
     @Override
     public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
+
+      // AGREGAR:
+      /**
+       * No retornar hechos repetidos (hechos que tengan el mismo titulo)
+       * No retornar hechos que esten censurados (chequear con solicitudes si estaActivo)
+       * Si el hecho no esta activo, marcarlo en MONGO como estaBorrado = true y no retornarlo en la respuesta
+       */
         meterRegistry.counter("busquedas_realizadas", "tipo", "hechos").increment();
 
         Pageable pageable = PageRequest.of(pagina, tamanoPagina);
@@ -262,12 +269,9 @@ public class Fachada implements IFachadaAgregador
             return new PaginacionDTO(List.of(), 0, 0, pagina);
         }
 
-        Set<String> titulosYaVistos = new HashSet<>();
-        List<HechoDTO> hechosDTO = resultados.getContent().stream()
+        // Set<String> titulosYaVistos = new HashSet<>();
+        List<HechoConPdisDTO> hechosDTO = resultados.getContent().stream()
                 .map(doc -> (HechoConPdisDTO) doc.getHechoDTOData())
-                .filter(Objects::nonNull)
-                .map(HechoConPdisDTO::hecho)
-                .filter(hecho -> titulosYaVistos.add(hecho.titulo())) // Solo acepta el primer documento con ese título
                 .collect(Collectors.toList());
 
         return new PaginacionDTO(
