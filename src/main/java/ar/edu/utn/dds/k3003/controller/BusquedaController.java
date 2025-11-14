@@ -28,11 +28,11 @@ public class BusquedaController
             @RequestParam(name = "size", defaultValue = "10") int tamanoPagina)
     {
 
-//        if (palabraClave == null || palabraClave.isBlank())
-//        {
-//            // Manejo de error o retornar lista vacía
-//            return ResponseEntity.badRequest().build();
-//        }
+        if (palabraClave == null || palabraClave.isBlank())
+        {
+            // Manejo de error o retornar lista vacía
+            return ResponseEntity.badRequest().build();
+        }
 
         PaginacionDTO resultados = fachada.buscar(palabraClave, tags, pagina, tamanoPagina);
         return ResponseEntity.ok(resultados);

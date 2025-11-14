@@ -17,4 +17,7 @@ public interface SolicitudesRetrofitClient
     @POST("api/solicitudes/estados")
     Call<Map<String, Boolean>> tienenSolicitudes(@Body List<String> hechoIds);
     // Map<hechoId, tieneSolicitudActiva>
+
+//    @GET("api/solicitudes/estaActivo")
+//    Call<Boolean> estaActivo(@Query("hecho") String hechoId);
 }

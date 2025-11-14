@@ -10,6 +10,7 @@ import ar.edu.utn.dds.k3003.enums.EstadoHechoEnum;
 import ar.edu.utn.dds.k3003.model.HechoDocument;
 import ar.edu.utn.dds.k3003.model.consenso.ConsensoEstrictoStrategy;
 import ar.edu.utn.dds.k3003.repository.mongo.IBuscadorRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,14 +41,16 @@ public class Fachada implements IFachadaAgregador
     private final Agregador agregador;
     private final SolicitudesProxy solicitudesProxy;
     private final IBuscadorRepository buscadorRepository;
+    private final MeterRegistry meterRegistry;
 
-    public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador, SolicitudesProxy solicitudesProxy, IBuscadorRepository buscadorRepository)
+    public Fachada(IFuenteRepository fuenteRepository, IConsensoColeccionRepository consensoRepository, Agregador agregador, SolicitudesProxy solicitudesProxy, IBuscadorRepository buscadorRepository, MeterRegistry meterRegistry)
     {
         this.fuenteRepository = fuenteRepository;
         this.consensoRepository = consensoRepository;
         this.agregador = agregador;
         this.solicitudesProxy = solicitudesProxy;
         this.buscadorRepository = buscadorRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
@@ -234,6 +237,8 @@ public class Fachada implements IFachadaAgregador
     @Override
     public PaginacionDTO buscar(String palabraClave, List<String> tags, int pagina, int tamanoPagina)
     {
+        meterRegistry.counter("busquedas_realizadas", "tipo", "hechos").increment();
+
         Pageable pageable = PageRequest.of(pagina, tamanoPagina);
         Page<HechoDocument> resultados;
 

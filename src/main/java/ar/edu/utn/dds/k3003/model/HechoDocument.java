@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class HechoDocument {
 
     @Id
-    private String mongoId;
+    private String mongoId; // Generado por MongoDB
 
     @Field("hecho_id")
     private String hechoId;
