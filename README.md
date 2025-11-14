@@ -8,6 +8,7 @@
 |                    |   Agregador    |   [Repo Agregador](https://github.com/Agus-Righetti/DdSTPAgregador2025)     | [Render Agregador](https://ddstpagregador2025-qsza.onrender.com/)        |
 
 - [Datadog](https://app.datadoghq.com/help/quick_start)
+- [Repo Bot Telegram](https://github.com/FrancoAdN/tp-dds-telegrambot)
 ---
 
 ## Enunciados
@@ -15,7 +16,9 @@
 [Entrega 1](https://docs.google.com/document/d/1NZXyArrTiWjNHKGKDeHRVKB71l_s14ZiMCfsH3xLkb0/edit?tab=t.0)  
 [Entrega 2](https://docs.google.com/document/d/1ztJBBVzDKqn37Jj_TkSnr07S4ghAfePI29kS2lSvAtc/edit?tab=t.0)  
 [Entrega 3](https://docs.google.com/document/d/1AUvymkzZTCIYqJInmEa6-gPbt344DjffRZe2HP0qye8/edit?tab=t.0)  
-[Entrega 4](https://docs.google.com/document/d/1pwHfGOhKwREjMl9F4r6Je1BSEIhudyfyOk5AInCUtHE/edit?tab=t.0)
+[Entrega 4](https://docs.google.com/document/d/1pwHfGOhKwREjMl9F4r6Je1BSEIhudyfyOk5AInCUtHE/edit?tab=t.0)  
+[Entrega 5](https://docs.google.com/document/d/1Kunw6VQ1GpV87gV5o08vM5V7a3kXLS732WG8BDjGOgE/edit?tab=t.0)  
+[Entrega 6](https://docs.google.com/document/d/1kfN761zRe_RDCQDmlb9i0yrq-Y_rzT8SDXDCZRfGeM4/edit?tab=t.0)
 
 ## Casos de uso
 
