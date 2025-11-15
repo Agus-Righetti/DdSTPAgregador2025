@@ -249,7 +249,7 @@ public class Fachada implements IFachadaAgregador
         Pageable pageable = PageRequest.of(pagina, tamanoPagina);
         Page<HechoDocument> resultados;
 
-        String textoBusqueda = palabraClave;
+        // String textoBusqueda = palabraClave;
 
         boolean hayPalabraClave = palabraClave != null && !palabraClave.isBlank();
         boolean hayTags = tags != null && !tags.isEmpty();
@@ -269,8 +269,29 @@ public class Fachada implements IFachadaAgregador
             return new PaginacionDTO(List.of(), 0, 0, pagina);
         }
 
+        List<HechoDocument> hechos = resultados.getContent();
+
+        for(HechoDocument h : hechos) {
+            String hechoId = h.getHechoId();
+            boolean activo = true;
+
+            try {
+                activo = solicitudesProxy.estaActivo(hechoId);
+            } catch (Exception e) {
+                // Falla segura: Si hay error de comunicación, asumimos INACTIVO (false) para no mostrar un hecho incierto.
+                System.err.println("Error de comunicación con Solicitudes al chequear hechoId: " + hechoId + ". Asumiendo inactivo.");
+                activo = false;
+            }
+
+            if (!activo) {
+                h.setEstaBorrado(true);
+                buscadorRepository.save(h);
+            }
+        }
+
         // Set<String> titulosYaVistos = new HashSet<>();
         List<HechoConPdisDTO> hechosDTO = resultados.getContent().stream()
+                .filter(doc -> !doc.isEstaBorrado())
                 .map(doc -> (HechoConPdisDTO) doc.getHechoDTOData())
                 .collect(Collectors.toList());
 
@@ -281,6 +302,4 @@ public class Fachada implements IFachadaAgregador
                 resultados.getNumber()
         );
     }
-
-
 }

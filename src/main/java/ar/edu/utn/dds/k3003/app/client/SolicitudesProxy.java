@@ -70,4 +70,52 @@ public class SolicitudesProxy
             throw new RuntimeException("Error de comunicación con el servicio de solicitudes.", e);
         }
     }
+
+//    public Map<String, Boolean> hechosActivos(List<String> hechoIds)
+//    {
+//        try
+//        {
+//            Response<Map<String, Boolean>> response = service.hechosActivos(hechoIds).execute();
+//            if (response.isSuccessful() && response.body() != null)
+//            {
+//                System.out.println("[LOG][SolicitudesProxy] Body: " + response.body());
+//                return response.body();
+//            }
+//            else // Manejo de error: por defecto se asume que están activos.
+//            {
+//                return hechoIds.stream().collect(Collectors.toMap(id -> id, id -> true));
+//            }
+//        }
+//        catch (IOException e)
+//        {
+//            throw new RuntimeException("Error de comunicación con el servicio de solicitudes.", e);
+//        }
+//    }
+
+    public boolean estaActivo(String hechoId)
+    {
+        try
+        {
+            // Llama al cliente Retrofit y ejecuta la solicitud HTTP
+            Response<Boolean> response = service.estaActivo(hechoId).execute();
+
+            if (response.isSuccessful() && response.body() != null)
+            {
+                // Retorna el booleano (true/false) devuelto por el microservicio Solicitudes
+                return response.body();
+            }
+            else
+            {
+                // Si la respuesta HTTP no es 2xx, asumimos inactivo por seguridad.
+                System.err.println("[Proxy] Error al obtener estaActivo para ID " + hechoId + ". Código: " + response.code());
+                return false;
+            }
+        }
+        catch (IOException e)
+        {
+            // Si hay un error de red o timeout, asumimos inactivo para evitar mostrar contenido no verificado.
+            System.err.println("[Proxy] Error de IO al llamar a estaActivo para ID " + hechoId + ": " + e.getMessage());
+            return false;
+        }
+    }
 }

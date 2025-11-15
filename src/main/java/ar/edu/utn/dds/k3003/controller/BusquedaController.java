@@ -22,17 +22,19 @@ public class BusquedaController
 
     @GetMapping
     public ResponseEntity<PaginacionDTO> buscarHechos(
-            @RequestParam(name = "query") String palabraClave, // Obligatorio
+            @RequestParam(name = "query", required = false) String palabraClave,
             @RequestParam(name = "tags", required = false) List<String> tags, // Acepta múltiples tags
             @RequestParam(name = "page", defaultValue = "0") int pagina,
             @RequestParam(name = "size", defaultValue = "10") int tamanoPagina)
     {
 
-        if (palabraClave == null || palabraClave.isBlank())
-        {
-            // Manejo de error o retornar lista vacía
-            return ResponseEntity.badRequest().build();
-        }
+//        if (palabraClave == null || palabraClave.isBlank())
+//        {
+//            // Manejo de error o retornar lista vacía
+//            return ResponseEntity.badRequest().build();
+//        }
+
+        System.out.println(tags);
 
         PaginacionDTO resultados = fachada.buscar(palabraClave, tags, pagina, tamanoPagina);
         return ResponseEntity.ok(resultados);
